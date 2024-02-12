@@ -4,6 +4,8 @@ let word = "cat"; // The word to guess
 let guessed = []; // Array to hold guessed letters
 let incorrectGuesses = 0; // Count of incorrect guesses
 let gameStarted = false; // Game state
+let fullWordGuessed = false; // A flag to indicate if the full word was guessed
+let showEndGameMessage = false; // Flag to indicate if the end game message should be shown
 
 function setup() {
   createCanvas(400, 400);
@@ -12,19 +14,33 @@ function setup() {
 }
 
 function draw() {
-  if (!gameStarted) {
+  if (!gameStarted && !showEndGameMessage) {
     background(240);
-    text("Hangman", width / 2, height / 2);
+    text("Click to Start", width / 2, height / 2);
+  } else if (showEndGameMessage) {
+    // The end game message is displayed in displayEndGameMessage
   } else {
     background(255);
     drawHangman(incorrectGuesses);
     updateDisplayWord();
+    checkGameState(); // Check if the game has been won or lost
   }
 }
 
 function mousePressed() {
-  if (!gameStarted) {
+  if (showEndGameMessage) {
+    // Reset the game to start anew
+    incorrectGuesses = 0;
+    guessed = [];
+    fullWordGuessed = false;
     gameStarted = true;
+    showEndGameMessage = false;
+  } else if (!gameStarted) {
+    gameStarted = true; // Start the game on initial click or after resetting
+    incorrectGuesses = 0; // Reset incorrect guesses for a fresh start
+    guessed = []; // Clear any guessed letters
+    fullWordGuessed = false; // Reset full word guessed flag
+    showEndGameMessage = false; // Ensure end game message is not shown at the start
     initializeGame();
   }
 }
@@ -54,58 +70,62 @@ function drawHangman(stage) {
   stroke(0);
   strokeWeight(2);
 
-  // Base
-  if (stage > 0) line(100, 350, 300, 350);
-  
-  // Pole
-  if (stage > 1) line(200, 350, 200, 100);
-  
-  // Top
-  if (stage > 2) line(200, 100, 150, 100);
-  
-  // Rope
-  if (stage > 3) line(150, 100, 150, 150);
-  
-  // Head
-  if (stage > 4) ellipse(150, 175, 50, 50);
-  
-  // Body
-  if (stage > 5) line(150, 200, 150, 250);
-  
-  // Left Arm
-  if (stage > 6) line(150, 220, 120, 190);
-  
-  // Right Arm
-  if (stage > 7) line(150, 220, 180, 190);
-  
-  // Left Leg
-  if (stage > 8) line(150, 250, 120, 280);
-  
-  // Right Leg
-  if (stage > 9) line(150, 250, 180, 280);
+  // Draw the hangman based on the number of incorrect guesses
+  if (stage > 0) line(100, 350, 300, 350); // Base
+  if (stage > 1) line(200, 350, 200, 100); // Pole
+  if (stage > 2) line(200, 100, 150, 100); // Top
+  if (stage > 3) line(150, 100, 150, 150); // Rope
+  if (stage > 4) ellipse(150, 175, 50, 50); // Head
+  if (stage > 5) line(150, 200, 150, 250); // Body
+  if (stage > 6) line(150, 220, 120, 190); // Left Arm
+  if (stage > 7) line(150, 220, 180, 190); // Right Arm
+  if (stage > 8) line(150, 250, 120, 280); // Left Leg
+  if (stage > 9) line(150, 250, 180, 280); // Right Leg
 }
 
 function gotSpeech() {
   if (speechRec.resultValue) {
-    let input = speechRec.resultString.toUpperCase();
+    let input = speechRec.resultString.toUpperCase().trim();
     console.log("Recognized input:", input);
-    let inputLetter = input.charAt(0);
-    console.log("Recognized letter:", inputLetter);
-
-    // Convert word to guess to uppercase for comparison
-    let upperCaseWord = word.toUpperCase();
-    
-    // Check if the recognized letter is in the word, considering both in the same case
-    if (upperCaseWord.includes(inputLetter)) {
-      // Convert inputLetter to lowercase before adding to guessed to maintain consistency
-      let lowerCaseInputLetter = inputLetter.toLowerCase();
-      if (!guessed.includes(lowerCaseInputLetter)) {
-        guessed.push(lowerCaseInputLetter); // Add the lowercase letter to guessed array
-        speech.speak('Correct');
-      }
+    if (input === word.toUpperCase()) {
+      fullWordGuessed = true; // The full word was correctly guessed
+      speech.speak("Correct, you guessed the word!");
     } else {
-      speech.speak('Incorrect');
-      incorrectGuesses++;
+      let inputLetter = input.charAt(0);
+      console.log("Recognized letter:", inputLetter);
+
+      let upperCaseWord = word.toUpperCase();
+      if (upperCaseWord.includes(inputLetter)) {
+        let lowerCaseInputLetter = inputLetter.toLowerCase();
+        if (!guessed.includes(lowerCaseInputLetter)) {
+          guessed.push(lowerCaseInputLetter);
+          speech.speak('Correct');
+        }
+      } else {
+        speech.speak('Incorrect');
+        incorrectGuesses++;
+      }
     }
   }
+}
+
+function checkGameState() {
+  let won = word.split('').every(letter => guessed.includes(letter)) || fullWordGuessed; // Updated condition
+  let lost = incorrectGuesses > 9;
+
+  if (won || lost) {
+    let message = won ? "You Win! Click to restart." : "Game Over! Click to restart.";
+    displayEndGameMessage(message);
+  }
+}
+
+function displayEndGameMessage(message) {
+  fill(0);
+  textSize(24);
+  textAlign(CENTER, CENTER);
+  text(message, width / 2, height / 2);
+  if (message.includes("Game Over")) {
+    text(`The word was: ${word}`, width / 2, height / 2 + 30);
+  }
+  showEndGameMessage = true; // Indicate that the end game message is currently being displayed
 }
