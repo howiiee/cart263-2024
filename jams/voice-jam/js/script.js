@@ -3,6 +3,7 @@ let speech;
 let word = ""; // The word to guess will be set after loading from file
 let guessed = []; // Array to hold guessed letters
 let incorrectGuesses = 0; // Count of incorrect guesses
+let incorrectLetters = []; // Array to hold incorrect guessed letters
 let gameStarted = false; // Game state
 let fullWordGuessed = false; // A flag to indicate if the full word was guessed
 let showEndGameMessage = false; // Flag to indicate if the end game message should be shown
@@ -32,6 +33,7 @@ function draw() {
     background(200);
     drawHangman(incorrectGuesses);
     updateDisplayWord();
+    displayIncorrectLetters(); // Display incorrect letters
     checkGameState(); // Check if the game has been won or lost
   }
 }
@@ -41,6 +43,7 @@ function mousePressed() {
     // Reset the game to start anew
     incorrectGuesses = 0;
     guessed = [];
+    incorrectLetters = []; // Reset incorrect letters for a fresh start
     fullWordGuessed = false;
     gameStarted = true;
     showEndGameMessage = false;
@@ -49,9 +52,9 @@ function mousePressed() {
     gameStarted = true; // Start the game on initial click or after resetting
     incorrectGuesses = 0; // Reset incorrect guesses for a fresh start
     guessed = []; // Clear any guessed letters
+    incorrectLetters = []; // Clear incorrect letters
     fullWordGuessed = false; // Reset full word guessed flag
     showEndGameMessage = false; // Ensure end game message is not shown at the start
-    // No need to call initializeGame() here since the game is initialized in setup()
   }
 }
 
@@ -95,7 +98,7 @@ function drawHangman(stage) {
   if (stage > 1) line(200, 325, 200, 75); // Pole
   if (stage > 2) line(200, 75, 150, 75); // Top
   if (stage > 3) line(150, 75, 150, 125); // Rope
-  if (stage > 4) ellipse(150, 150, 50, 25); // Head
+  if (stage > 4) ellipse(150, 150, 50, 50); // Head
   if (stage > 5) line(150, 175, 150, 225); // Body
   if (stage > 6) line(150, 195, 120, 165); // Left Arm
   if (stage > 7) line(150, 195, 180, 165); // Right Arm
@@ -136,16 +139,26 @@ function gotSpeech() {
 function processLetter(inputLetter) {
   console.log("Recognized letter:", inputLetter);
   let upperCaseWord = word.toUpperCase();
+  let lowerCaseInputLetter = inputLetter.toLowerCase();
   if (upperCaseWord.includes(inputLetter)) {
-    let lowerCaseInputLetter = inputLetter.toLowerCase();
     if (!guessed.includes(lowerCaseInputLetter)) {
       guessed.push(lowerCaseInputLetter);
       speech.speak('Correct');
     }
   } else {
-    speech.speak('Incorrect');
+    if (!incorrectLetters.includes(lowerCaseInputLetter)) {
+      incorrectLetters.push(lowerCaseInputLetter); // Add to incorrect letters if not already present
+      speech.speak('Incorrect');
+    }
     incorrectGuesses++;
   }
+}
+
+function displayIncorrectLetters() {
+  textSize(20);
+  fill(255, 0, 0); // Set text color to red for incorrect letters
+  textAlign(LEFT, TOP);
+  text("Incorrect: " + incorrectLetters.join(', '), 10, 10); // Display at the top left corner
 }
 
 function checkGameState() {
