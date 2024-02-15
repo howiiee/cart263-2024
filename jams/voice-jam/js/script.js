@@ -26,7 +26,7 @@ function setup() {
 function draw() {
   if (!gameStarted && !showEndGameMessage) {
     background(240);
-    text("Click to Start", width / 2, height / 2);
+    text("Hangman", width / 2, height / 2);
   } else if (showEndGameMessage) {
     // The end game message is displayed in displayEndGameMessage
   } else {
