@@ -1,16 +1,25 @@
 let speechRec;
 let speech;
-let word = "cat"; // The word to guess
+let word = ""; // The word to guess will be set after loading from file
 let guessed = []; // Array to hold guessed letters
 let incorrectGuesses = 0; // Count of incorrect guesses
 let gameStarted = false; // Game state
 let fullWordGuessed = false; // A flag to indicate if the full word was guessed
 let showEndGameMessage = false; // Flag to indicate if the end game message should be shown
+let words = []; // Array to hold words from the file
+let pendingConfirmation = false; // Flag to indicate if a letter is waiting for confirmation
+let letterToConfirm = ''; // The letter to be confirmed
+
+function preload() {
+  // Load the words from a file
+  words = loadStrings('words.txt');
+}
 
 function setup() {
   createCanvas(400, 400);
   textAlign(CENTER, CENTER);
   textSize(32);
+  initializeGame(); // Now initializes the game after loading words
 }
 
 function draw() {
@@ -35,17 +44,26 @@ function mousePressed() {
     fullWordGuessed = false;
     gameStarted = true;
     showEndGameMessage = false;
+    word = random(words).trim(); // Select a new word for the new game
   } else if (!gameStarted) {
     gameStarted = true; // Start the game on initial click or after resetting
     incorrectGuesses = 0; // Reset incorrect guesses for a fresh start
     guessed = []; // Clear any guessed letters
     fullWordGuessed = false; // Reset full word guessed flag
     showEndGameMessage = false; // Ensure end game message is not shown at the start
-    initializeGame();
+    // No need to call initializeGame() here since the game is initialized in setup()
   }
 }
 
 function initializeGame() {
+  // Select a random word from the loaded words
+  if (words.length > 0) {
+    word = random(words).trim();
+  } else {
+    console.log("No words loaded or error in loading words.");
+    word = "cat"; // Default word in case no words are loaded
+  }
+
   // Initialize speech recognition
   speechRec = new p5.SpeechRec('en-US');
   speechRec.onResult = gotSpeech;
@@ -56,6 +74,8 @@ function initializeGame() {
 
   // Initialize speech synthesis
   speech = new p5.Speech();
+
+  gameStarted = false; // Wait for user to click to start
 }
 
 function updateDisplayWord() {
@@ -87,30 +107,49 @@ function gotSpeech() {
   if (speechRec.resultValue) {
     let input = speechRec.resultString.toUpperCase().trim();
     console.log("Recognized input:", input);
-    if (input === word.toUpperCase()) {
-      fullWordGuessed = true; // The full word was correctly guessed
-      speech.speak("Correct, you guessed the word!");
-    } else {
-      let inputLetter = input.charAt(0);
-      console.log("Recognized letter:", inputLetter);
 
-      let upperCaseWord = word.toUpperCase();
-      if (upperCaseWord.includes(inputLetter)) {
-        let lowerCaseInputLetter = inputLetter.toLowerCase();
-        if (!guessed.includes(lowerCaseInputLetter)) {
-          guessed.push(lowerCaseInputLetter);
-          speech.speak('Correct');
-        }
+    if (pendingConfirmation) {
+      if (input === "YES") {
+        processLetter(letterToConfirm);
+        pendingConfirmation = false;
+        letterToConfirm = '';
+      } else if (input === "NO") {
+        speech.speak("Let's try again.");
+        pendingConfirmation = false;
+        letterToConfirm = '';
       } else {
-        speech.speak('Incorrect');
-        incorrectGuesses++;
+        speech.speak(`Did you say the letter ${letterToConfirm}? Yes or no?`);
+      }
+    } else {
+      if (input.length === 1) {
+        letterToConfirm = input;
+        pendingConfirmation = true;
+        speech.speak(`Did you say the letter ${letterToConfirm}? Yes or no?`);
+      } else if (input === word.toUpperCase()) {
+        fullWordGuessed = true;
+        speech.speak("Correct, you guessed the word!");
       }
     }
   }
 }
 
+function processLetter(inputLetter) {
+  console.log("Recognized letter:", inputLetter);
+  let upperCaseWord = word.toUpperCase();
+  if (upperCaseWord.includes(inputLetter)) {
+    let lowerCaseInputLetter = inputLetter.toLowerCase();
+    if (!guessed.includes(lowerCaseInputLetter)) {
+      guessed.push(lowerCaseInputLetter);
+      speech.speak('Correct');
+    }
+  } else {
+    speech.speak('Incorrect');
+    incorrectGuesses++;
+  }
+}
+
 function checkGameState() {
-  let won = word.split('').every(letter => guessed.includes(letter)) || fullWordGuessed; // Updated condition
+  let won = word.split('').every(letter => guessed.includes(letter)) || fullWordGuessed;
   let lost = incorrectGuesses > 9;
 
   if (won || lost) {
