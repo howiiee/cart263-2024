@@ -29,7 +29,7 @@ function draw() {
   } else if (showEndGameMessage) {
     // The end game message is displayed in displayEndGameMessage
   } else {
-    background(255);
+    background(200);
     drawHangman(incorrectGuesses);
     updateDisplayWord();
     checkGameState(); // Check if the game has been won or lost
@@ -83,7 +83,7 @@ function updateDisplayWord() {
   textSize(32);
   textAlign(CENTER, BOTTOM);
   fill(0); // Ensure text color is set to black
-  text(displayWord, width / 2, height - 50); // Adjusted to give space for the hangman drawing
+  text(displayWord, width / 2, height - 25); // Adjusted to give space for the hangman drawing
 }
 
 function drawHangman(stage) {
@@ -91,16 +91,16 @@ function drawHangman(stage) {
   strokeWeight(2);
 
   // Draw the hangman based on the number of incorrect guesses
-  if (stage > 0) line(100, 350, 300, 350); // Base
-  if (stage > 1) line(200, 350, 200, 100); // Pole
-  if (stage > 2) line(200, 100, 150, 100); // Top
-  if (stage > 3) line(150, 100, 150, 150); // Rope
-  if (stage > 4) ellipse(150, 175, 50, 50); // Head
-  if (stage > 5) line(150, 200, 150, 250); // Body
-  if (stage > 6) line(150, 220, 120, 190); // Left Arm
-  if (stage > 7) line(150, 220, 180, 190); // Right Arm
-  if (stage > 8) line(150, 250, 120, 280); // Left Leg
-  if (stage > 9) line(150, 250, 180, 280); // Right Leg
+  if (stage > 0) line(100, 325, 300, 325); // Base
+  if (stage > 1) line(200, 325, 200, 75); // Pole
+  if (stage > 2) line(200, 75, 150, 75); // Top
+  if (stage > 3) line(150, 75, 150, 125); // Rope
+  if (stage > 4) ellipse(150, 150, 50, 25); // Head
+  if (stage > 5) line(150, 175, 150, 225); // Body
+  if (stage > 6) line(150, 195, 120, 165); // Left Arm
+  if (stage > 7) line(150, 195, 180, 165); // Right Arm
+  if (stage > 8) line(150, 225, 120, 255); // Left Leg
+  if (stage > 9) line(150, 225, 180, 255); // Right Leg
 }
 
 function gotSpeech() {
