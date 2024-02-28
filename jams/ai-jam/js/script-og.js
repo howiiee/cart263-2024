@@ -1,13 +1,5 @@
 console.log('ml5 version:', ml5.version);
 
-// Global variables for state management
-let stateIndex = 0; // State tracker: 0 - Space, 1 - Water, 2 - Sand, 3 - Wind
-const states = ['space', 'water', 'sand', 'wind'];
-const backgroundColors = ['#000000', '#3498db', '#c2b280', '#ADD8E6']; // Sample colors for each state
-let currentState = states[stateIndex];
-let simulationStarted = false;
-
-// Simulation variables
 const num = 2000;
 const noiseScale = 0.005;
 const particles = [];
@@ -17,12 +9,9 @@ let speedMultiplier = 1; // Default speed multiplier
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  textSize(32);
-  textAlign(CENTER, CENTER);
-
-  // Initialize particles
   for (let i = 0; i < num; i++) {
     particles.push(createVector(random(width), random(height)));
+    stroke(255);
   }
   
   // Set up webcam
@@ -42,46 +31,31 @@ function modelReady() {
 }
 
 function draw() {
-  background(backgroundColors[stateIndex] + '10'); // Always draw the background with low opacity
-  
-  if (!simulationStarted) {
-    fill(255);
-    text(`${currentState.toUpperCase()}`, width / 2, height / 2);
-  } else {
-    const fingersUp = countFingersUp();
-    
-    if (fingersUp === 5) {
-      // Move to the next state without restarting the simulation automatically
-      stateIndex = (stateIndex + 1) % states.length;
-      currentState = states[stateIndex];
-      simulationStarted = false; // Require a mouse click to start in the new state
-    } else {
-      adjustSpeed(fingersUp);
-      for (let i = 0; i < num; i++) {
-        let p = particles[i];
-        stroke(255); // Set particle color
-        point(p.x, p.y);
+  background(0, 10);
 
-        let n = noise(p.x * noiseScale, p.y * noiseScale) * TAU;
-        p.x += cos(n) * speedMultiplier;
-        p.y += sin(n) * speedMultiplier;
+  const fingersUp = countFingersUp();
+  adjustSpeed(fingersUp);
 
-        if (!onScreen(p)) {
-          p.x = random(width);
-          p.y = random(height);
-        }
+  if (fingersUp !== 4) { // Pause if 4 fingers are up
+    for (let i = 0; i < num; i++) {
+      let p = particles[i];
+      point(p.x, p.y);
+      
+      let n = noise(p.x * noiseScale, p.y * noiseScale) * TAU;
+      p.x += cos(n) * speedMultiplier;
+      p.y += sin(n) * speedMultiplier;
+
+      if (!onScreen(p)) {
+        p.x = random(width);
+        p.y = random(height);
       }
     }
   }
 }
 
 function mousePressed() {
-  if (!simulationStarted) {
-    simulationStarted = true;
-  }
   noiseSeed(millis());
 }
-
 
 function countFingersUp() {
   if (predictions.length > 0) {
