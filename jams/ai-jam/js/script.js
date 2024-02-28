@@ -1,9 +1,9 @@
-console.log('ml5 version:', ml5.version);
+// Importing ml5.js library for machine learning capabilities
+// Note: Ensure the ml5 library is linked in your HTML
 
-// Global variables for state management
-let stateIndex = 0; // State tracker: 0 - Space, 1 - Water, 2 - Sand, 3 - Wind
-const states = ['space', 'water', 'sand', 'wind'];
-const backgroundColors = ['#000000', '#3498db', '#c2b280', '#ADD8E6']; // Sample colors for each state
+let stateIndex = 0; // Now starts at 0 for the "intro" state
+const states = ['intro', 'space', 'water', 'sand', 'wind']; // Added "intro" state
+const backgroundColors = ['#2c3e50', '#000000', '#3498db', '#c2b280', '#ADD8E6']; // Added color for "intro"
 let currentState = states[stateIndex];
 let simulationStarted = false;
 
@@ -44,17 +44,29 @@ function modelReady() {
 function draw() {
   background(backgroundColors[stateIndex] + '10'); // Always draw the background with low opacity
   
-  if (!simulationStarted) {
-    fill(255);
+  if (currentState === 'intro') {
+    fill(255); // White text color
+    textSize(16); // Adjusted text size for intro text
+    text("Welcome to the Interactive Particle Simulation!\n\n" +
+         "Speed Control:\n" +
+         "1 Finger Up: Particles move faster.\n" +
+         "2 Fingers Up: Even faster movement.\n" +
+         "3 Fingers Up: Fastest speed.\n\n" +
+         "Pause: 4 fingers up to pause.\n\n" +
+         "State Transition: 5 fingers up to change states.\n\n" +
+         "Click anywhere to start.", width / 2, height / 2);
+  } else if (!simulationStarted) {
+    fill(255); // Reset text color and size for state display
+    textSize(32);
     text(`${currentState.toUpperCase()}`, width / 2, height / 2);
   } else {
+    // Rest of the simulation code
     const fingersUp = countFingersUp();
     
     if (fingersUp === 5) {
-      // Move to the next state without restarting the simulation automatically
       stateIndex = (stateIndex + 1) % states.length;
       currentState = states[stateIndex];
-      simulationStarted = false; // Require a mouse click to start in the new state
+      simulationStarted = false;
     } else {
       adjustSpeed(fingersUp);
       for (let i = 0; i < num; i++) {
@@ -76,12 +88,14 @@ function draw() {
 }
 
 function mousePressed() {
-  if (!simulationStarted) {
+  if (currentState === 'intro') {
+    stateIndex = 1; // Move to the first interactive state (e.g., "space")
+    currentState = states[stateIndex];
+  } else if (!simulationStarted) {
     simulationStarted = true;
   }
   noiseSeed(millis());
 }
-
 
 function countFingersUp() {
   if (predictions.length > 0) {
@@ -117,7 +131,7 @@ function adjustSpeed(fingersUp) {
       speedMultiplier = 1;
       break;
     case 1:
-      speedMultiplier = 2; // Adjust these values as needed for desired speed
+      speedMultiplier = 2;
       break;
     case 2:
       speedMultiplier = 3;
@@ -126,10 +140,10 @@ function adjustSpeed(fingersUp) {
       speedMultiplier = 4;
       break;
     case 4:
-      // Speed multiplier not updated, screen pauses
+      // Intentionally left blank for pause
       break;
     default:
-      speedMultiplier = 1; // Fallback, can adjust if needed
+      speedMultiplier = 1; // Fallback
   }
 }
 
