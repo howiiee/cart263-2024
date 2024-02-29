@@ -1,6 +1,3 @@
-// Importing ml5.js library for machine learning capabilities
-// Note: Ensure the ml5 library is linked in your HTML
-
 let stateIndex = 0; // Initialize stateIndex at 0 for the "intro" state
 const states = ['intro', 'space', 'water', 'sand', 'wind']; // Define available states including "intro"
 const backgroundColors = ['#2c3e50', '#000000', '#3498db', '#c2b280', '#ADD8E6']; // Define background colors for each state including "intro"
