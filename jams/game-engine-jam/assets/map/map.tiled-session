@@ -1,0 +1,82 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map.tmj",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "map.tmj": {
+            "scale": 1,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 272.5,
+                "y": 267.5
+            }
+        },
+        "map.tmj#Basic_Furniture": {
+            "scaleInEditor": 1
+        },
+        "map.tmj#Darker_Grass_Hill_Tiles_Slopes_v2": {
+            "scaleInDock": 1
+        },
+        "map.tmj#Darker_Grass_Hills_Tiles_v2": {
+            "scaleInDock": 1
+        },
+        "map.tmj#Darker_Grass_Tile_Layers": {
+            "scaleInDock": 1
+        },
+        "map.tmj#Grass_Hill_Tiles_Slopes v.2": {
+            "scaleInDock": 1
+        },
+        "map.tmj#Grass_Hill_Tiles_v2": {
+            "scaleInDock": 1
+        },
+        "map.tmj#Grass_Tile_Layers": {
+            "scaleInDock": 1
+        },
+        "map.tmj#Mushrooms, Flowers, Stones": {
+            "scaleInEditor": 1
+        },
+        "map.tmj#Piknik basket": {
+            "scaleInEditor": 1
+        },
+        "map.tmj#Trees, stumps and bushes": {
+            "scaleInEditor": 1
+        },
+        "map.tmj#Water well": {
+            "scaleInEditor": 1
+        },
+        "map.tmj#Water_1": {
+            "scaleInEditor": 1
+        },
+        "map.tmj#Wood Bridge": {
+            "scaleInDock": 1
+        },
+        "map.tmj#Wooden House": {
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "/Users/howie/Documents/github/cart263-2024/jams/game-engine-jam/assets/map",
+    "last.imagePath": "/Users/howie/Documents/github/cart263-2024/jams/game-engine-jam/assets/images",
+    "map.height": 32,
+    "map.lastUsedExportFilter": "All Files (*)",
+    "map.lastUsedFormat": "json",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 50,
+    "openFiles": [
+        "map.tmj"
+    ],
+    "project": "map.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+        "map.tmj"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
