@@ -99,6 +99,10 @@ class play extends Phaser.Scene {
         furnitureBotLayer.setCollisionByProperty({collides: true});
         furnitureTopLayer.setCollisionByProperty({collides: true});
         furnitureLayer.setCollisionByProperty({collides: true});
+        piknickBasketLayer.setCollisionByProperty({collides: true});
+        piknickBlanketLayer.setCollisionByProperty({collides: true});
+        dirtLayer.setCollisionByProperty({collides: true});
+        farmingLayer.setCollisionByProperty({collides: true});
 
         this.character = this.physics.add.sprite(325, 225, 'character');
 
@@ -180,6 +184,10 @@ class play extends Phaser.Scene {
         this.physics.add.collider(this.character, bridgesLayer);
         this.physics.add.collider(this.character, houseLayer);
         this.physics.add.collider(this.character, hillsLayer);
+        this.physics.add.collider(this.character, farmingLayer);
+        this.physics.add.collider(this.character, dirtLayer);
+        this.physics.add.collider(this.character, piknickBasketLayer);
+        this.physics.add.collider(this.character, piknickBlanketLayer);
 
         // Create the door animations
         this.anims.create({
@@ -213,7 +221,7 @@ class play extends Phaser.Scene {
         }, null, this);
 
         // Sensor zone for closing the door
-        const closeSensor = this.add.zone(door.x, door.y).setSize(5, 5);
+        const closeSensor = this.add.zone(door.x, door.y).setSize(16, 16);
         this.physics.world.enable(closeSensor);
         closeSensor.body.setAllowGravity(false);
         closeSensor.body.moves = false;
@@ -227,16 +235,16 @@ class play extends Phaser.Scene {
         }, null, this);
 
 
-        // In your create method after creating the water layer
-        this.physics.world.createDebugGraphic();
+        // // In your create method after creating the water layer
+        // this.physics.world.createDebugGraphic();
 
-        // Visualize the physics bodies of the waterLayer tiles
-        const debugGraphics = this.add.graphics().setAlpha(0.75);
-        houseLayer.renderDebug(debugGraphics, {
-            tileColor: null, // Color of non-colliding tiles
-            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-            faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding faces
-        });
+        // // Visualize the physics bodies of the waterLayer tiles
+        // const debugGraphics = this.add.graphics().setAlpha(0.75);
+        // houseLayer.renderDebug(debugGraphics, {
+        //     tileColor: null, // Color of non-colliding tiles
+        //     collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        //     faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding faces
+        // });
 
     }
 
