@@ -10,6 +10,7 @@ const noiseScale = 0.005; // Scale factor for noise in particle movement
 const particles = []; // Array to store particle vectors
 let speedMultiplier = 1; // Speed multiplier for particle movement
 let speechRec; // Variable to store the speech recognition object
+let mode = 'normal'; // Mode can be 'normal', 'disperse', 'group'
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -46,16 +47,15 @@ function processCommand(command) {
       speedMultiplier = Math.max(speedMultiplier - 1, 0.5);
   } else if (command.includes("continue") || command.includes("resume")) {
       if (speedMultiplier === 0) speedMultiplier = 1;
+      mode = 'normal';
+  } else if (command.includes("disperse")) {
+      mode = 'disperse';
+  } else if (command.includes("group")) {
+      mode = 'group';
   } else if (command.includes("change") || command.includes("switch")) {
-      stateIndex = (stateIndex + 1) % states.length;
-      currentState = states[stateIndex];
-      simulationStarted = false;
-  } else if (command.includes("start")) {
-      if (currentState === 'intro') {
-          stateIndex = 1;
-          currentState = states[stateIndex];
-      }
-      simulationStarted = true;
+    stateIndex = (stateIndex + 1) % states.length;
+    currentState = states[stateIndex];
+    simulationStarted = false;
   }
 }
 
@@ -79,6 +79,8 @@ function displayIntro() {
          "Say 'slower' to decrease particle speed.\n" +
          "Say 'stop' to pause the movement.\n" +
          "Say 'continue' to resume the movement.\n" +
+         "Say 'disperse' to scatter particles.\n" +
+         "Say 'group' to gather particles in the center.\n" +
          "Say 'change' or 'switch' to change states.\n\n" +
          "Click anywhere or say 'start' to begin.", width / 2, height / 2);
 }
@@ -86,28 +88,37 @@ function displayIntro() {
 function displayStateName() {
     fill(255);
     textSize(32);
+    noStroke();
     text(`${currentState.toUpperCase()}`, width / 2, height / 2);
 }
 
 function runSimulation() {
-  stroke(particleColors[stateIndex]); // Set particle color based on the current state
+    stroke(particleColors[stateIndex]); // Set particle color based on the current state
 
-  for (let i = 0; i < num; i++) {
-      let p = particles[i];
-      point(p.x, p.y); // Draw particle
+    for (let i = 0; i < num; i++) {
+        let p = particles[i];
 
-      let n = noise(p.x * noiseScale, p.y * noiseScale) * TAU; // Calculate noise-based angle
-      p.x += cos(n) * speedMultiplier; // Move particle on x-axis
-      p.y += sin(n) * speedMultiplier; // Move particle on y-axis
+        if (mode === 'normal') {
+            let n = noise(p.x * noiseScale, p.y * noiseScale) * TAU;
+            p.x += cos(n) * speedMultiplier;
+            p.y += sin(n) * speedMultiplier;
+        } else if (mode === 'disperse') {
+            p.x += random(-1, 1) * speedMultiplier * 10;
+            p.y += random(-1, 1) * speedMultiplier * 10;
+        } else if (mode === 'group') {
+            p.x -= (p.x - width / 2) * 0.05 * speedMultiplier;
+            p.y -= (p.y - height / 2) * 0.05 * speedMultiplier;
+        }
 
-      // Wrap around edges to keep particles on screen
-      if (!onScreen(p)) {
-          p.x = random(width);
-          p.y = random(height);
-      }
-  }
+        point(p.x, p.y); // Draw particle
+
+        // Wrap around edges to keep particles on screen
+        if (!onScreen(p)) {
+            p.x = random(width);
+            p.y = random(height);
+        }
+    }
 }
-
 
 function mousePressed() {
     if (currentState === 'intro') {
