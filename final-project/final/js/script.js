@@ -30,24 +30,32 @@ function setup() {
 }
 
 function gotSpeech() {
-    if (speechRec.resultValue) {
-        let command = speechRec.resultString.toLowerCase();
-        console.log(command); // Debugging output
+  if (speechRec.resultValue) {
+      let command = speechRec.resultString.toLowerCase();
+      processCommand(command);
+  }
+}
 
-        if (command.includes("stop") || command.includes("pause")) {
-            speedMultiplier = 0; // Pause particles
-        } else if (command.includes("faster")) {
-            speedMultiplier = Math.min(speedMultiplier + 1, 5); // Increase speed, max out at 5
-        } else if (command.includes("slower")) {
-            speedMultiplier = Math.max(speedMultiplier - 1, 0.5); // Decrease speed, minimum at 0.5
-        } else if (command.includes("continue") || command.includes("resume")) {
-            if (speedMultiplier === 0) speedMultiplier = 1; // Resume movement
-        } else if (command.includes("change") || command.includes("switch")) {
-            stateIndex = (stateIndex + 1) % states.length; // Switch state
-            currentState = states[stateIndex];
-            simulationStarted = false; // Reset simulation flag
-        }
-    }
+function processCommand(command) {
+  if (command.includes("stop") || command.includes("pause")) {
+      speedMultiplier = 0;
+  } else if (command.includes("faster")) {
+      speedMultiplier = Math.min(speedMultiplier + 1, 5);
+  } else if (command.includes("slower")) {
+      speedMultiplier = Math.max(speedMultiplier - 1, 0.5);
+  } else if (command.includes("continue") || command.includes("resume")) {
+      if (speedMultiplier === 0) speedMultiplier = 1;
+  } else if (command.includes("change") || command.includes("switch")) {
+      stateIndex = (stateIndex + 1) % states.length;
+      currentState = states[stateIndex];
+      simulationStarted = false;
+  } else if (command.includes("start")) {
+      if (currentState === 'intro') {
+          stateIndex = 1;
+          currentState = states[stateIndex];
+      }
+      simulationStarted = true;
+  }
 }
 
 function draw() {
