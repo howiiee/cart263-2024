@@ -1,6 +1,7 @@
 let stateIndex = 0; // Initialize stateIndex at 0 for the "intro" state
 const states = ['intro', 'space', 'water', 'sand', 'wind']; // Define available states
 const backgroundColors = ['#2c3e50', '#000000', '#3498db', '#c2b280', '#ADD8E6']; // Background colors for each state
+const particleColors = ['#ecf0f1', '#ffcd3c', '#FFFFFF', '#e67e22', '#2ecc71']; // Particle colors for each state
 let currentState = states[stateIndex]; // Set the current state based on the stateIndex
 let simulationStarted = false; // Flag to track if the simulation has started
 
@@ -89,21 +90,24 @@ function displayStateName() {
 }
 
 function runSimulation() {
-    for (let i = 0; i < num; i++) {
-        let p = particles[i];
-        stroke(255);
-        point(p.x, p.y);
+  stroke(particleColors[stateIndex]); // Set particle color based on the current state
 
-        let n = noise(p.x * noiseScale, p.y * noiseScale) * TAU;
-        p.x += cos(n) * speedMultiplier;
-        p.y += sin(n) * speedMultiplier;
+  for (let i = 0; i < num; i++) {
+      let p = particles[i];
+      point(p.x, p.y); // Draw particle
 
-        if (!onScreen(p)) {
-            p.x = random(width);
-            p.y = random(height);
-        }
-    }
+      let n = noise(p.x * noiseScale, p.y * noiseScale) * TAU; // Calculate noise-based angle
+      p.x += cos(n) * speedMultiplier; // Move particle on x-axis
+      p.y += sin(n) * speedMultiplier; // Move particle on y-axis
+
+      // Wrap around edges to keep particles on screen
+      if (!onScreen(p)) {
+          p.x = random(width);
+          p.y = random(height);
+      }
+  }
 }
+
 
 function mousePressed() {
     if (currentState === 'intro') {
