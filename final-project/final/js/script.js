@@ -4,6 +4,7 @@ const backgroundColors = ['#2c3e50', '#000000', '#3498db', '#c2b280', '#ADD8E6']
 const particleColors = ['#ecf0f1', '#ffcd3c', '#FFFFFF', '#e67e22', '#2ecc71']; // Particle colors for each state
 let currentState = states[stateIndex]; // Set the current state based on the stateIndex
 let simulationStarted = false; // Flag to track if the simulation has started
+let soundIntro, soundSpace, soundWater, soundSand, soundWind;
 
 const num = 2000; // Number of particles
 const noiseScale = 0.005; // Scale factor for noise in particle movement
@@ -11,6 +12,13 @@ const particles = []; // Array to store particle vectors
 let speedMultiplier = 1; // Speed multiplier for particle movement
 let speechRec; // Variable to store the speech recognition object
 let mode = 'normal'; // Mode can be 'normal', 'disperse', 'group'
+
+function preload() {
+  soundSpace = loadSound('assets/sounds/space.mp3');
+  soundWater = loadSound('assets/sounds/water.mp3');
+  soundSand = loadSound('assets/sounds/sand.mp3');
+  soundWind = loadSound('assets/sounds/wind.mp3');
+}
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -29,6 +37,36 @@ function setup() {
     speechRec.start();
 
     frameRate(60);
+}
+
+function manageSounds() {
+  switch (currentState) {
+      case 'space':
+          playSound(soundSpace);
+          break;
+      case 'water':
+          playSound(soundWater);
+          break;
+      case 'sand':
+          playSound(soundSand);
+          break;
+      case 'wind':
+          playSound(soundWind);
+          break;
+  }
+
+  // This function plays the given sound if it's not already playing
+  function playSound(sound) {
+      [soundSpace, soundWater, soundSand, soundWind].forEach(s => {
+          if (s === sound) {
+              if (!s.isPlaying()) {
+                  s.loop();  // Use loop() instead of play() to loop the sound
+              }
+          } else {
+              s.stop();
+          }
+      });
+  }
 }
 
 function gotSpeech() {
@@ -61,6 +99,7 @@ function processCommand(command) {
 
 function draw() {
     background(backgroundColors[stateIndex] + '10'); // Low opacity background for fade effect
+    manageSounds();  // Manage sounds based on the current state
 
     if (currentState === 'intro') {
         displayIntro();
