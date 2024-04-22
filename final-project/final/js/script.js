@@ -113,7 +113,7 @@ function draw() {
 function displayIntro() {
     fill(255);
     textSize(16);
-    text("Welcome to the Interactive Particle Simulation!\n\n" +
+    text("WHISPER \n\n" +
          "Say 'faster' to increase particle speed.\n" +
          "Say 'slower' to decrease particle speed.\n" +
          "Say 'stop' to pause the movement.\n" +
