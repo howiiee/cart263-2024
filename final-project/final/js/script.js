@@ -91,11 +91,12 @@ function processCommand(command) {
   } else if (command.includes("group")) {
       mode = 'group';
   } else if (command.includes("change") || command.includes("switch")) {
-    stateIndex = (stateIndex + 1) % states.length;
-    currentState = states[stateIndex];
-    simulationStarted = false;
+      stateIndex = (stateIndex + 1) % states.length;
+      currentState = states[stateIndex];
+      simulationStarted = false;  // Reset this flag to trigger state name display
   }
 }
+
 
 function draw() {
     background(backgroundColors[stateIndex] + '10'); // Low opacity background for fade effect
@@ -160,13 +161,16 @@ function runSimulation() {
 }
 
 function mousePressed() {
-    if (currentState === 'intro') {
-        stateIndex = 1;
-        currentState = states[stateIndex];
-    }
-    simulationStarted = true;
-    noiseSeed(millis());
+  if (currentState === 'intro') {
+      stateIndex = 1; // Start from the 'space' state post-intro
+      currentState = states[stateIndex];
+      simulationStarted = false; // Ensure the state name is displayed upon introduction
+  } else {
+      simulationStarted = true; // Start simulation only if not in intro
+  }
+  noiseSeed(millis());
 }
+
 
 function onScreen(v) {
     return v.x >= 0 && v.x <= width && v.y >= 0 && v.y <= height;
